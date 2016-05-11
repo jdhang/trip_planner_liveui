@@ -42,8 +42,8 @@ $(function initializeMap (){
 
   var iconURLs = {
     hotel: '/images/lodging_0star.png',
-    restaurant: '/images/restaurant.png',
-    activity: '/images/star-3.png'
+    restaurants: '/images/restaurant.png',
+    activities: '/images/star-3.png'
   };
 
   function drawMarker (type, coords) {
@@ -82,6 +82,8 @@ $(function initializeMap (){
 
   // handle Add buttons
   var $addBtns = $('#options-panel').find('button')
+  var $removeBtns;
+  var dayNum = '1';
   $addBtns.on('click', function (e) {
     var $this = $(this)
     var selectedData = $this.siblings('select')
@@ -95,7 +97,7 @@ $(function initializeMap (){
 
     if (thing === 'hotel') {
       obj = findObj(id, thing)
-      itinerary['1'][thing] = value
+      itinerary[dayNum][thing] = value
       if ($('#hotel-list').find('.itinerary-item').length === 0) {
         $('#hotel-list').append(
           '<div class="itinerary-item">\
@@ -109,9 +111,9 @@ $(function initializeMap (){
       }
       drawMarker(thing, obj.place.location)
     } else {
-      if(itinerary['1'][thing].indexOf(value) === -1) {
+      if(itinerary[dayNum][thing].indexOf(value) === -1) {
         obj = findObj(id, thing)
-        itinerary['1'][thing].push(value)
+        itinerary[dayNum][thing].push(value)
         $('#' + thing + '-list').append(
           '<div class="itinerary-item">\
             <span class="title">' + value + '</span>\
@@ -119,10 +121,26 @@ $(function initializeMap (){
             </button>\
           </div>'
         )
+        drawMarker(thing, obj.place.location)
       }
     }
   })
 
+  $(document).on('click', '.itinerary-item .remove', function (e) {
+    var $this = $(this)
+    var nameOfElement = $this.siblings('.title').html()
+    var list = $this.parent().parent()
+    var thing = list.attr('id').split('-')[0]
+    $this.parent().remove();
+    if (thing === 'hotel') {
+      itinerary[dayNum][thing] = ''
+    }
+    else {
+      itinerary[dayNum][thing] = itinerary[dayNum][thing].filter((el) => {
+        return el !== nameOfElement
+      })
+    }
+  })
   function findObj (id, collection) {
     var obj
     id = +id
@@ -141,4 +159,21 @@ $(function initializeMap (){
     }
     return obj
   }
+  function addDay() {
+    var numOfDays = Object.keys(itinerary).length + 1;
+    numOfDays = numOfDays.toString();
+    itinerary[numOfDays] = {
+      hotel: '',
+      restaurants: [],
+      activities: []
+    }
+  }
+  $addDayBtn = $('#day-add');
+  $addDayBtn.on('click', function(e) {
+    var $this = $(this);
+    addDay()
+    $this.before('<button class="btn btn-circle day-btn ">' +
+                  Object.keys(itinerary).length.toString() + 
+                  '</button>')
+  })
 });

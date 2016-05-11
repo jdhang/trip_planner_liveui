@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build-css": "node-sass -w -r assets/stylesheets -o public/stylesheets",
-    "start": "npm run build-css & nodemon -e html,css,js app.js"
+    "prestart": "node-sass -o public/stylesheets assets/stylesheets",
+    "start": "nodemon -e html,css,js app.js"
   },
   "author": "gabriel@fullstackacademy.com",
   "license": "MIT",
