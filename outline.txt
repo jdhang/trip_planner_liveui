@@ -1,0 +1,16 @@
+- Select a Hotel (Only 1 allowed)
+  - If hotel is already selected, replaces previously selected hotel
+  - Update DOM of Selected Day's list?
+    - Added under My Hotel
+    - onClick of Hotels selector
+  - Add marker onto Google Map for place's lat, long
+- Select Restaurants
+  - Update DOM of selected Day's list
+    - Added under My Restaurants
+    - onClick of Restaurants selector
+  - Add marker onto Google Map for place's lat, long
+- Same thing for activities
+- Add Day's for during the Trip
+- If Day 2 is deleted and there are 3, Day 3's list will be put into Day 2
+- New Day zooms map out
+- Clicking on Day number will switch to Day's plan
