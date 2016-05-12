@@ -112,6 +112,7 @@ $(function initializeMap (){
       drawMarker(thing, obj.place.location)
     } else {
       if(itinerary[dayNum][thing].indexOf(value) === -1) {
+        if (thing === 'restaurants' && itinerary[dayNum][thing].length > 2) return
         obj = findObj(id, thing)
         itinerary[dayNum][thing].push(value)
         $('#' + thing + '-list').append(
@@ -141,6 +142,7 @@ $(function initializeMap (){
       })
     }
   })
+
   function findObj (id, collection) {
     var obj
     id = +id
@@ -159,6 +161,7 @@ $(function initializeMap (){
     }
     return obj
   }
+
   function addDay() {
     var numOfDays = Object.keys(itinerary).length + 1;
     numOfDays = numOfDays.toString();
@@ -168,12 +171,56 @@ $(function initializeMap (){
       activities: []
     }
   }
+
   $addDayBtn = $('#day-add');
   $addDayBtn.on('click', function(e) {
     var $this = $(this);
     addDay()
     $this.before('<button class="btn btn-circle day-btn ">' +
-                  Object.keys(itinerary).length.toString() + 
+                  Object.keys(itinerary).length.toString() +
                   '</button>')
+  })
+
+  $('.day-buttons').on('click', '.day-btn', function (e) {
+    var $dayTitle = $('#day-title').children('span')
+    var $this = $(this)
+    var currDay = $this.html()
+    if (currDay !== '+' && currDay !== $dayTitle.html().split(' ')[1]) {
+      dayNum = currDay
+      $dayTitle.html($dayTitle.html().split(' ')[0] + ' ' + currDay)
+      $('.day-btn').removeClass('current-day')
+      $this.addClass('current-day')
+      $('#itinerary .list-group').children().remove()
+    }
+  })
+
+  $('#day-title').on('click', '.remove', function (e) {
+    // managing DOM
+    var $this = $(this)
+    var $dayBtnChildren = $('.day-buttons').children()
+    var currDay = +$this.siblings('span').html().split(' ')[1]
+    if ($dayBtnChildren.length === 2) return
+    $('.current-day').remove()
+    $dayBtnChildren.each(function (i, dayBtn) {
+      var $dayBtn = $(dayBtn)
+      if ($dayBtn.html() > currDay) {
+        $dayBtn.html((+$dayBtn.html() - 1))
+      }
+      if (currDay === +$dayBtn.html() || (currDay - 1 === +$dayBtn.html())) {
+        $dayBtn.trigger('click')
+      }
+    })
+
+    // managing data structure
+    delete itinerary[currDay]
+    Object.keys(itinerary).forEach((key) => {
+      var value = itinerary[key]
+      if (+key > currDay) {
+        itinerary[(+key - 1)] = value
+        if (+key === Object.keys(itinerary).length) {
+          delete itinerary[key]
+        }
+      }
+    })
   })
 });
